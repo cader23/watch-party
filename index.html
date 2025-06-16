@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎬 Watch Party – Kesari 2</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #000000, #1a1a1a);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding-top: 60px;
+    }
+    h1 {
+      font-size: 40px;
+      color: #ff4444;
+    }
+    .viewer-counter {
+      font-size: 18px;
+      margin-top: 20px;
+      color: #00ffcc;
+    }
+    video {
+      margin-top: 30px;
+      width: 80%;
+      max-width: 800px;
+      border: 3px solid red;
+      border-radius: 10px;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎥 Watch Party: Kesari 2</h1>
+  <div class="viewer-counter">👀 Currently watching: <span id="count"></span> people</div>
+
+  <video controls autoplay>
+    <source src="https://archive.org/download/913-f-56498e-278e-771d-413d-3eec-9ab-2b-5-1/913F56498e278e771d413d3eec9ab2b5%20%281%29.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="footer">📅 June 15, 2025 – Enjoy the private screening!</div>
+
+  <script>
+    const min = 12, max = 35;
+    document.getElementById("count").textContent = Math.floor(Math.random() * (max - min + 1)) + min;
+  </script>
+
+</body>
+</html>
