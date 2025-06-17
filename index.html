@@ -55,18 +55,7 @@
     }
 
     // Precomputed SHA-256 hash of the admin password (e.g., 'yourStrongPassword')
-    const ADMIN_HASH = 'f2ca1bb6c7e907d06dafe4687e579fce9a6b6e2f06e408d0aa6dda714db24a47'; // example hash
-
-    async function sha256(str) {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    async function loginAdmin() {
-      const pass = document.getElementById('adminPass').value;
-      const hash = await sha256(pass);
-      if (hash === ADMIN_HASH) {
-        window.location.href = 'admin.html';
+    const ADMIN_HASH = '73a2af8864fc500fa49048bf3003776c19938f360e56bd03663866fb3087884a'; // hash of '2020'
       } else {
         alert('❌ Incorrect admin password.');
       }
