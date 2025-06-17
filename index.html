@@ -2,70 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🍿 Watch Party</title>
+  <title>🎥 Watch Party Login</title>
   <style>
     body {
-      background: #000;
+      background: linear-gradient(to right, #000000, #1a1a1a);
       color: white;
-      margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
     }
     h1 {
+      font-size: 36px;
       color: #ff4444;
-      margin-top: 20px;
     }
-    video {
-      width: 90%;
-      max-width: 800px;
+    .login-container {
+      background: #222;
+      padding: 30px;
       border-radius: 10px;
-      box-shadow: 0 0 20px #ff4444;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+      text-align: center;
     }
-    #videoContainer p {
-      color: yellow;
-      font-size: 18px;
-      margin-top: 30px;
+    input, select {
+      padding: 12px;
+      margin: 10px 0;
+      width: 90%;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+      background: #333;
+      color: #fff;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #ff4444;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #cc0000;
     }
   </style>
 </head>
 <body>
-  <h1>🍿 Welcome to the Watch Party</h1>
-
-  <div id="videoContainer">
-    <video id="videoPlayer" controls autoplay>
-      <source id="videoSrc" src="" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
+  <div class="login-container">
+    <h1>🎥 Watch Party Login</h1>
+    <select id="role">
+      <option value="user">User</option>
+      <option value="admin">Admin</option>
+    </select><br>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="checkLogin()">Login</button>
   </div>
 
   <script>
-    // Retrieve stored movies as objects with name and link
-    const movies = JSON.parse(localStorage.getItem("movies") || "[]");
-    const views = JSON.parse(localStorage.getItem("views") || "{}");
-    const latestMovieObj = movies[0]; // object { name, link }
+    function checkLogin() {
+      const role = document.getElementById('role').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
 
-    if (latestMovieObj && latestMovieObj.link) {
-      // Set video source to the link property
-      const srcElem = document.getElementById("videoSrc");
-      srcElem.src = latestMovieObj.link;
-      document.getElementById("videoPlayer").load();
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "{}");
 
-      // Count view (once per session)
-      const sessionKey = "viewed_" + latestMovieObj.link;
-      if (!sessionStorage.getItem(sessionKey)) {
-        views[latestMovieObj.link] = (views[latestMovieObj.link] || 0) + 1;
-        localStorage.setItem("views", JSON.stringify(views));
-        sessionStorage.setItem(sessionKey, "yes");
+      if (role === "admin") {
+        if (password === "2020") {
+          window.location.href = "admin.html";
+        } else {
+          alert("❌ Incorrect admin password.");
+        }
+      } else { // user
+        if (users[username] === password) {
+          if (loggedInUsers[username]) {
+            alert("⚠️ This user is already logged in elsewhere.");
+            return;
+          }
+          // Mark as logged in
+          loggedInUsers[username] = true;
+          localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
+          sessionStorage.setItem("currentUser", username);
+          // Redirect to the main watch page
+          window.location.href = "watch.html";
+        } else {
+          alert("❌ Invalid username or password.");
+        }
       }
-    } else {
-      // If no movie is available or link missing
-      document.getElementById("videoContainer").innerHTML =
-        "<p>🚫 No movie uploaded yet. Please contact Admin.</p>";
     }
+
+    // Ensure logout on tab close
+    window.addEventListener("beforeunload", () => {
+      const username = sessionStorage.getItem("currentUser");
+      if (username) {
+        const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "{}");
+        loggedInUsers[username] = false;
+        localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
+        sessionStorage.removeItem("currentUser");
+      }
+    });
   </script>
 </body>
 </html>

@@ -4,31 +4,11 @@
   <meta charset="UTF-8">
   <title>Admin Panel | Watch Party</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #1c1c1c 0%, #111 100%);
-      color: #f0f0f0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    header {
-      background: #222;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      color: #ff6b6b;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
-      animation: glow 2s infinite;
-    }
-    @keyframes glow {
-      0%,100% { text-shadow: 0 0 8px #ff6b6b; }
-      50%    { text-shadow: 0 0 20px #ffa8a8; }
-    }
-    .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap:20px; padding:20px; }
+    body { margin:0; padding:0; background:linear-gradient(135deg,#1c1c1c,#111); color:#f0f0f0; font-family:'Segoe UI',Tahoma,Verdana,sans-serif; }
+    header { background:#222; padding:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.5); }
+    header h1 { margin:0; font-size:2.5rem; color:#ff6b6b; text-shadow:1px 1px 4px rgba(0,0,0,0.7); animation:glow 2s infinite; }
+    @keyframes glow { 0%,100%{text-shadow:0 0 8px #ff6b6b;}50%{text-shadow:0 0 20px #ffa8a8;} }
+    .container { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; padding:20px; }
     section { background:#1f1f1f; border-radius:8px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.5); display:flex; flex-direction:column; }
     section h2 { margin-top:0; color:#ffa502; border-bottom:1px solid #333; padding-bottom:8px; }
     .counts, .views { background:#2a2a2a; padding:12px; border-radius:6px; text-align:center; margin-bottom:10px; font-weight:bold; }
@@ -47,7 +27,10 @@
   </style>
 </head>
 <body>
-  <header><h1>🔧 Admin Panel</h1></header>
+  <header>
+    <h1>🔧 Admin Panel</h1>
+    <button style="background:#ff6b6b; margin-top:10px;" onclick="window.open('watch.html','_blank')">Preview Watch Party</button>
+  </header>
   <div class="container">
     <section>
       <div class="counts" id="userCounts">Users: 0 (Online: 0, Offline: 0)</div>
@@ -62,26 +45,30 @@
     </section>
     <section>
       <h2>User Management</h2>
-      <input type="text" id="newUser" placeholder="New Username">
-      <input type="password" id="newPass" placeholder="New Password">
-      <button onclick="addUser()">Add User</button>
-      <input type="text" id="delUser" placeholder="Username to Delete">
+      <input type="text" id="newUser" placeholder="New Username"><br>
+      <input type="password" id="newPass" placeholder="New Password"><br>
+      <button onclick="addUser()">Add User</button><br>
+      <input type="text" id="delUser" placeholder="Username to Delete"><br>
       <button onclick="deleteUser()">Delete User</button>
     </section>
     <section>
       <h2>Movie Management</h2>
-      <input type="text" id="movieName" placeholder="Movie Name">
-      <input type="text" id="movieLink" placeholder="Archive.org MP4 Link">
-      <button onclick="addMovie()">Add Movie</button>
+      <input type="text" id="movieName" placeholder="Movie Name"><br>
+      <input type="text" id="movieLink" placeholder="Archive.org MP4 Link"><br>
+      <button onclick="addMovie()">Add Movie</button><br>
+      <input type="text" id="delMovie" placeholder="Movie Name to Delete"><br>
+      <button onclick="deleteMovieByName()">Delete Movie</button>
       <ul id="movieList"></ul>
     </section>
     <section>
       <h2>Web Series Management</h2>
-      <input type="text" id="seriesName" placeholder="Series Name">
-      <button onclick="initSeries()">Create Series</button>
+      <input type="text" id="seriesName" placeholder="Series Name"><br>
+      <button onclick="initSeries()">Create Series</button><br>
+      <input type="text" id="delSeries" placeholder="Series Name to Delete"><br>
+      <button onclick="deleteSeriesByName()">Delete Series</button>
       <div id="episodeSection" style="display:none; margin-top:10px;">
         <h3 id="episodeTitle"></h3>
-        <input type="text" id="episodeLink" placeholder="Episode Link">
+        <input type="text" id="episodeLink" placeholder="Episode Link"><br>
         <button onclick="addEpisode()">Add Episode</button>
         <button onclick="finishSeries()">Done</button>
       </div>
@@ -89,18 +76,17 @@
     </section>
   </div>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      loadUsers(); loadMovies(); loadSeries();
-    });
+    document.addEventListener('DOMContentLoaded', () => { loadUsers(); loadMovies(); loadSeries(); });
+
     function updateCounts(users, loggedInUsers, views) {
       const totalUsers = Object.keys(users).length;
       const onlineCount = Object.values(loggedInUsers).filter(s => s).length;
       const offlineCount = totalUsers - onlineCount;
-      document.getElementById('userCounts').textContent =
-        `Users: ${totalUsers} (Online: ${onlineCount}, Offline: ${offlineCount})`;
+      document.getElementById('userCounts').textContent = `Users: ${totalUsers} (Online: ${onlineCount}, Offline: ${offlineCount})`;
       const totalViews = Object.values(views).reduce((sum, v) => sum + v, 0);
       document.getElementById('viewCounts').textContent = `Total Views: ${totalViews}`;
     }
+
     function loadUsers() {
       const users = JSON.parse(localStorage.getItem('users') || '{}');
       const loggedInUsers = JSON.parse(localStorage.getItem('loggedInUsers') || '{}');
@@ -113,124 +99,54 @@
         const pwdCell = document.createElement('td'); pwdCell.textContent = users[user];
         const isOnline = loggedInUsers[user] === true;
         const statusCell = document.createElement('td');
-        statusCell.textContent = isOnline ? 'Online' : 'Offline';
-        statusCell.style.color = isOnline ? 'lime' : 'gray';
+        statusCell.textContent = isOnline ? 'Online' : 'Offline'; statusCell.style.color = isOnline ? 'lime' : 'gray';
         const actionCell = document.createElement('td');
-        if (isOnline) {
-          const btn = document.createElement('button'); btn.textContent = 'Force Logout';
-          btn.onclick = () => {
-            const updated = JSON.parse(localStorage.getItem('loggedInUsers') || '{}');
-            updated[user] = false;
-            localStorage.setItem('loggedInUsers', JSON.stringify(updated));
-            loadUsers();
-          };
-          actionCell.appendChild(btn);
-        } else {
-          actionCell.textContent = '-';
-        }
+        if (isOnline) { const btn = document.createElement('button'); btn.textContent = 'Force Logout'; btn.onclick = () => { loggedInUsers[user] = false; localStorage.setItem('loggedInUsers', JSON.stringify(loggedInUsers)); loadUsers(); }; actionCell.appendChild(btn); } else { actionCell.textContent = '-'; }
         [userCell,pwdCell,statusCell,actionCell].forEach(c => row.appendChild(c)); userList.appendChild(row);
       });
     }
+
     function addUser() {
       const username = document.getElementById('newUser').value.trim();
       const password = document.getElementById('newPass').value;
       if (!username || !password) return alert('Enter both username and password');
       const users = JSON.parse(localStorage.getItem('users') || '{}');
       if (users[username]) return alert('User already exists');
-      users[username] = password;
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('User added successfully');
-      document.getElementById('newUser').value = '';
-      document.getElementById('newPass').value = '';
-      loadUsers();
+      users[username] = password; localStorage.setItem('users', JSON.stringify(users)); alert('User added successfully'); document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; loadUsers();
     }
+
     function deleteUser() {
       const username = document.getElementById('delUser').value.trim();
       const users = JSON.parse(localStorage.getItem('users') || '{}');
-      if (!users[username]) return alert('User not found');
-      delete users[username];
-      localStorage.setItem('users', JSON.stringify(users));
-      alert('User deleted successfully');
-      document.getElementById('delUser').value = '';
-      loadUsers();
+      if (!users[username]) return alert('User not found'); delete users[username]; localStorage.setItem('users', JSON.stringify(users)); alert('User deleted successfully'); document.getElementById('delUser').value = ''; loadUsers();
     }
+
     function addMovie() {
       const name = document.getElementById('movieName').value.trim();
       const link = document.getElementById('movieLink').value.trim();
       if (!name || !link) return alert('Provide name and link');
-      const list = JSON.parse(localStorage.getItem('movies') || '[]');
-      list.push({name, link});
-      localStorage.setItem('movies', JSON.stringify(list));
-      document.getElementById('movieName').value = '';
-      document.getElementById('movieLink').value = '';
-      loadMovies();
+      const list = JSON.parse(localStorage.getItem('movies') || '[]'); list.push({name,link}); localStorage.setItem('movies', JSON.stringify(list)); document.getElementById('movieName').value = ''; document.getElementById('movieLink').value = ''; loadMovies();
     }
+
     function loadMovies() {
-      const container = document.getElementById('movieList');
-      const list = JSON.parse(localStorage.getItem('movies') || '[]');
-      container.innerHTML = '';
-      list.forEach((m, i) => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${m.name}</strong> - <a href="${m.link}" target="_blank">Watch</a> <button onclick="deleteMovie(${i})">Delete Movie</button>`;
-        container.appendChild(li);
-      });
-    }
-    function deleteMovie(i) {
-      const list = JSON.parse(localStorage.getItem('movies') || '[]');
-      list.splice(i,1);
-      localStorage.setItem('movies', JSON.stringify(list));
-      loadMovies();
-    }
-    let currentSeries = null, episodeCount = 1;
-    function initSeries() {
-      const name = document.getElementById('seriesName').value.trim();
-      if (!name) return alert('Enter series name');
-      currentSeries = {name, episodes: []};
-      episodeCount = 1;
-      document.getElementById('episodeSection').style.display = 'block';
-      document.getElementById('episodeTitle').textContent = `Add Episodes for "${name}" (Episode ${episodeCount})`;
-    }
-    function addEpisode() {
-      const link = document.getElementById('episodeLink').value.trim();
-      if (!link) return alert('Enter episode link');
-      currentSeries.episodes.push(link);
-      episodeCount++;
-      document.getElementById('episodeLink').value = '';
-      document.getElementById('episodeTitle').textContent = `Add Episodes for "${currentSeries.name}" (Episode ${episodeCount})`;
-    }
-    function finishSeries() {
-      const list = JSON.parse(localStorage.getItem('series') || '[]');
-      list.push(currentSeries);
-      localStorage.setItem('series', JSON.stringify(list));
-      alert('Series added successfully');
-      document.getElementById('seriesName').value = '';
-      document.getElementById('episodeSection').style.display = 'none';
-      document.getElementById('episodeLink').value = '';
-      loadSeries();
-    }
-    function loadSeries() {
-      const container = document.getElementById('seriesList');
-      const list = JSON.parse(localStorage.getItem('series') || '[]');
-      container.innerHTML = '';
-      list.forEach((s, i) => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${s.name}</strong><ul>` +
-          s.episodes.map((ep,j) => `<li>Episode ${j+1}: <a href="${ep}" target="_blank">Watch</a></li>`).join('') +
-          `</ul><button onclick="deleteSeries(${i})">Delete Series</button>`;
-        container.appendChild(li);
-      });
-    }
-    function deleteSeries(i) {
-      const list = JSON.parse(localStorage.getItem('series') || '[]');
-      list.splice(i,1);
-      localStorage.setItem('series', JSON.stringify(list));
-      loadSeries();
-    }
-    window.addEventListener('storage', e => {
-      if (['loggedInUsers','users','views','movies','series'].includes(e.key)) {
-        loadUsers(); loadMovies(); loadSeries();
-      }
-    });
+      const container = document.getElementById('movieList'); const list = JSON.parse(localStorage.getItem('movies') || '[]'); container.innerHTML = ''; list.forEach((m,i) => { const li = document.createElement('li'); li.innerHTML = `<strong>${m.name}</strong> - <a href="${m.link}" target="_blank">Watch</a> <button onclick=\"deleteMovie(${i})\">Delete Movie</button>`; container.appendChild(li); });}
+
+    function deleteMovie(i) { const list = JSON.parse(localStorage.getItem('movies')|| '[]'); list.splice(i,1); localStorage.setItem('movies',JSON.stringify(list)); loadMovies(); }
+
+    function deleteMovieByName() { const name = document.getElementById('delMovie').value.trim(); let list=JSON.parse(localStorage.getItem('movies')||'[]'); const initial=list.length; list=list.filter(m=>m.name!==name); if(list.length===initial) return alert('Movie not found'); localStorage.setItem('movies', JSON.stringify(list)); alert('Movie deleted successfully'); document.getElementById('delMovie').value=''; loadMovies(); }
+
+    let currentSeries=null,episodeCount=1;
+    function initSeries() { const name=document.getElementById('seriesName').value.trim(); if(!name) return alert('Enter series name'); currentSeries={name,episodes:[]}; episodeCount=1; document.getElementById('episodeSection').style.display='block'; document.getElementById('episodeTitle').textContent=`Add Episodes for "${name}" (Episode ${episodeCount})`; }
+
+    function addEpisode() { const link=document.getElementById('episodeLink').value.trim(); if(!link) return alert('Enter episode link'); currentSeries.episodes.push(link); episodeCount++; document.getElementById('episodeLink').value=''; document.getElementById('episodeTitle').textContent=`Add Episodes for "${currentSeries.name}" (Episode ${episodeCount})`; }
+
+    function finishSeries() { let list=JSON.parse(localStorage.getItem('series')||'[]'); list.push(currentSeries); localStorage.setItem('series',JSON.stringify(list)); alert('Series added successfully'); document.getElementById('seriesName').value=''; document.getElementById('episodeSection').style.display='none'; document.getElementById('episodeLink').value=''; loadSeries(); }
+
+    function loadSeries() { const container=document.getElementById('seriesList'); const list=JSON.parse(localStorage.getItem('series')||'[]'); container.innerHTML=''; list.forEach((s,i)=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${s.name}</strong><ul>${s.episodes.map((e,j)=>`<li>Episode ${j+1}: <a href="${e}" target="_blank">Watch</a></li>`).join('')}</ul><button onclick=\"deleteSeries(${i})\">Delete Series</button>`; container.appendChild(li); }); }
+
+    function deleteSeriesByName() { const name=document.getElementById('delSeries').value.trim(); let list=JSON.parse(localStorage.getItem('series')||'[]'); const initial=list.length; list=list.filter(s=>s.name!==name); if(list.length===initial) return alert('Series not found'); localStorage.setItem('series', JSON.stringify(list)); alert('Series deleted successfully'); document.getElementById('delSeries').value=''; loadSeries(); }
+
+    window.addEventListener('storage', e => { if(['loggedInUsers','users','views','movies','series'].includes(e.key)){ loadUsers(); loadMovies(); loadSeries(); } });
   </script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🍿 Watch Party</title>
+  <style>
+    body {
+      background: #000;
+      color: white;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #ff4444;
+      margin-top: 20px;
+    }
+    video, iframe {
+      width: 90%;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #ff4444;
+    }
+    #videoContainer p {
+      color: yellow;
+      font-size: 18px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍿 Welcome to the Watch Party</h1>
+  <div id="videoContainer">
+    <video id="videoPlayer" controls autoplay>
+      <source id="videoSrc" src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <script>
+    const movies = JSON.parse(localStorage.getItem('movies') || '[]');
+    const views = JSON.parse(localStorage.getItem('views') || '{}');
+    const latest = movies[0];
+
+    function startMainVideo() {
+      const container = document.getElementById('videoContainer');
+      if (!latest || !latest.link) {
+        container.innerHTML = '<p>🚫 No movie uploaded yet. Please contact Admin.</p>';
+        return;
+      }
+      if (/\.mp4(\?|$)/i.test(latest.link)) {
+        document.getElementById('videoSrc').src = latest.link;
+        document.getElementById('videoPlayer').load();
+      } else if (latest.link.includes('archive.org')) {
+        const embedUrl = latest.link.replace('/details/', '/embed/');
+        container.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+      }
+      const key = 'viewed_' + latest.link;
+      if (!sessionStorage.getItem(key)) {
+        views[latest.link] = (views[latest.link] || 0) + 1;
+        localStorage.setItem('views', JSON.stringify(views));
+        sessionStorage.setItem(key, 'yes');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', startMainVideo);
+  </script>
+</body>
+</html>
