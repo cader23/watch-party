@@ -2,110 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🎥 Watch Party Login</title>
+  <title>🔐 Watch Party Login</title>
   <style>
-    body {
-      background: linear-gradient(to right, #000000, #1a1a1a);
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      font-size: 36px;
-      color: #ff4444;
-    }
-    .login-container {
-      background: #222;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
-      text-align: center;
-    }
-    input, select {
-      padding: 12px;
-      margin: 10px 0;
-      width: 90%;
-      border-radius: 6px;
-      border: none;
-      font-size: 16px;
-      background: #333;
-      color: #fff;
-    }
-    button {
-      padding: 12px 24px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #ff4444;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background-color: #cc0000;
-    }
+    body { background: linear-gradient(to right, #000, #1a1a1a); color: white; font-family: 'Segoe UI', Tahoma, Verdana; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .login-container { background: #222; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(255,0,0,0.4); text-align: center; width: 320px; }
+    h1 { font-size: 2rem; color: #ff4444; margin-bottom: 20px; }
+    input, button { width: calc(100% - 24px); padding: 12px; margin: 10px 0; border-radius: 6px; border: none; font-size: 16px; }
+    input { background: #333; color: #fff; }
+    button { background-color: #ff4444; color: #fff; cursor: pointer; transition: background 0.3s; }
+    button:hover { background-color: #cc0000; }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <h1>🎥 Watch Party Login</h1>
-    <select id="role">
-      <option value="user">User</option>
-      <option value="admin">Admin</option>
-    </select><br>
-    <input type="text" id="username" placeholder="Username"><br>
-    <input type="password" id="password" placeholder="Password"><br>
-    <button onclick="checkLogin()">Login</button>
+    <h1>🎥 Watch Party</h1>
+    <input type="text" id="username" placeholder="Enter Your Name" required><br>
+    <button onclick="enterParty()">Attend Watch Party</button>
   </div>
 
   <script>
-    function checkLogin() {
-      const role = document.getElementById('role').value;
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      const users = JSON.parse(localStorage.getItem("users") || "{}");
-      const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "{}");
-
-      if (role === "admin") {
-        if (password === "2020") {
-          window.location.href = "admin.html";
-        } else {
-          alert("❌ Incorrect admin password.");
-        }
-      } else { // user
-        if (users[username] === password) {
-          if (loggedInUsers[username]) {
-            alert("⚠️ This user is already logged in elsewhere.");
-            return;
-          }
-          // Mark as logged in
-          loggedInUsers[username] = true;
-          localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
-          sessionStorage.setItem("currentUser", username);
-          // Redirect to the main watch page
-          window.location.href = "watch.html";
-        } else {
-          alert("❌ Invalid username or password.");
-        }
-      }
+    function enterParty() {
+      const username = document.getElementById('username').value.trim();
+      if (!username) return alert('Please enter your name');
+      sessionStorage.setItem('currentUser', username);
+      window.location.href = 'watch.html';
     }
-
-    // Ensure logout on tab close
-    window.addEventListener("beforeunload", () => {
-      const username = sessionStorage.getItem("currentUser");
-      if (username) {
-        const loggedInUsers = JSON.parse(localStorage.getItem("loggedInUsers") || "{}");
-        loggedInUsers[username] = false;
-        localStorage.setItem("loggedInUsers", JSON.stringify(loggedInUsers));
-        sessionStorage.removeItem("currentUser");
-      }
-    });
   </script>
 </body>
 </html>
