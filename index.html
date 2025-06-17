@@ -33,6 +33,9 @@
   </div>
 
   <script>
+    // Disable right-click context menu
+    document.addEventListener('contextmenu', event => event.preventDefault());
+
     const roleSelect = document.getElementById('role');
     const userForm = document.getElementById('userForm');
     const adminForm = document.getElementById('adminForm');
@@ -54,8 +57,10 @@
       window.location.href = 'watch.html';
     }
 
-    // Precomputed SHA-256 hash of the admin password (e.g., 'yourStrongPassword')
-    const ADMIN_HASH = '73a2af8864fc500fa49048bf3003776c19938f360e56bd03663866fb3087884a'; // hash of '2020'
+    function loginAdmin() {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === '2020') {
+        window.location.href = 'admin.html';
       } else {
         alert('❌ Incorrect admin password.');
       }
