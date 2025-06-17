@@ -2,51 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>🎬 Watch Party – final destination</title>
+  <title>🍿 Watch Party</title>
   <style>
     body {
-      background: linear-gradient(to bottom right, #000000, #1a1a1a);
+      background: #000;
       color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-align: center;
-      padding-top: 60px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
     h1 {
-      font-size: 40px;
       color: #ff4444;
-    }
-    .viewer-counter {
-      font-size: 18px;
       margin-top: 20px;
-      color: #00ffcc;
     }
     video {
-      margin-top: 30px;
-      width: 80%;
+      width: 90%;
       max-width: 800px;
-      border: 3px solid red;
       border-radius: 10px;
+      box-shadow: 0 0 20px #ff4444;
     }
-    .footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #777;
+    #videoContainer p {
+      color: yellow;
+      font-size: 18px;
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
+  <h1>🍿 Welcome to the Watch Party</h1>
 
-  <h1>🎥 Watch Party:Final destination </h1>
-  <h2>Party will start on 17june 2:00pm</h2>
-  <div class="viewer-counter">👀 Currently watching: <span id="count"></span> people</div>
-
-
-  <div class="footer">📅 June 17, 2025 – Enjoy the private screening!</div>
+  <div id="videoContainer">
+    <video id="videoPlayer" controls autoplay>
+      <source id="videoSrc" src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
 
   <script>
-    const min = 12, max = 35;
-    document.getElementById("count").textContent = Math.floor(Math.random() * (max - min + 1)) + min;
-  </script>
+    // Retrieve stored movies as objects with name and link
+    const movies = JSON.parse(localStorage.getItem("movies") || "[]");
+    const views = JSON.parse(localStorage.getItem("views") || "{}");
+    const latestMovieObj = movies[0]; // object { name, link }
 
+    if (latestMovieObj && latestMovieObj.link) {
+      // Set video source to the link property
+      const srcElem = document.getElementById("videoSrc");
+      srcElem.src = latestMovieObj.link;
+      document.getElementById("videoPlayer").load();
+
+      // Count view (once per session)
+      const sessionKey = "viewed_" + latestMovieObj.link;
+      if (!sessionStorage.getItem(sessionKey)) {
+        views[latestMovieObj.link] = (views[latestMovieObj.link] || 0) + 1;
+        localStorage.setItem("views", JSON.stringify(views));
+        sessionStorage.setItem(sessionKey, "yes");
+      }
+    } else {
+      // If no movie is available or link missing
+      document.getElementById("videoContainer").innerHTML =
+        "<p>🚫 No movie uploaded yet. Please contact Admin.</p>";
+    }
+  </script>
 </body>
 </html>
