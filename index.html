@@ -8,83 +8,81 @@
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
     html { scroll-behavior: smooth; }
     :root {
-      --bg-dark: #000000;
-      --text-color: #ffffff;
+      --bg-dark: linear-gradient(-45deg, #0f0f0f, #2e003e, #000000, #3e003e);
+      --bg-light: linear-gradient(-45deg, #f0f0f0, #c2c2c2, #ffffff, #dddddd);
+      --text-dark: #fff;
+      --text-light: #000;
       --neon-color: #ff0055;
       --neon-alt: #00ffe5;
     }
     body {
       margin: 0;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Orbitron', sans-serif;a
       background: var(--bg-dark);
-      color: var(--text-color);
+      background-size: 400% 400%;
+      animation: backgroundShift 15s ease infinite;
+      color: var(--text-dark);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       padding: 40px 20px;
       min-height: 100vh;
+      transition: background 0.5s, color 0.5s;
     }
-    h1 {
-      font-size: 3rem;
-      animation: neonPulse 2s infinite, flicker 3s infinite;
-      margin-bottom: 10px;
+    body.light-theme {
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+    @keyframes backgroundShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
     @keyframes neonPulse {
-      0%,100% { text-shadow: 0 0 10px var(--neon-color), 0 0 20px var(--neon-color); }
-      50% { text-shadow: 0 0 20px var(--neon-alt), 0 0 30px var(--neon-alt); }
+      0%,100% { text-shadow:0 0 10px var(--neon-color),0 0 20px var(--neon-color); }
+      50% { text-shadow:0 0 20px var(--neon-alt),0 0 30px var(--neon-alt); }
     }
     @keyframes flicker {
-      0%,19%,21%,23%,25%,54%,56%,100% { opacity: 1; }
-      20%,22%,24%,55% { opacity: 0; }
+      0%,19%,21%,23%,25%,54%,56%,100% { opacity:1; }
+      20%,22%,24%,55% { opacity:0; }
     }
-    p {
-      font-size: 1.2rem;
-      max-width: 700px;
-      margin-bottom: 20px;
-      animation: fadeInText 2s ease forwards;
-    }
-    @keyframes fadeInText {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .button-group { display: flex; gap: 10px; margin: 20px 0; }
+    h1 { font-size:3rem; animation: neonPulse 2s infinite, flicker 3s infinite; margin-bottom:10px; }
+    p { font-size:1.2rem; max-width:700px; margin-bottom:20px; animation: fadeInText 2s ease forwards; }
+    @keyframes fadeInText { 0%{opacity:0;transform:translateY(30px);}100%{opacity:1;transform:translateY(0);} }
+    .button-group { display:flex; gap:10px; margin:20px 0; }
     .glow-button {
-      background: var(--neon-color);
-      border: none;
-      padding: 14px 32px;
-      color: var(--text-color);
-      font-size: 1.2rem;
-      border-radius: 30px;
-      cursor: pointer;
-      box-shadow: 0 0 15px var(--neon-color), 0 0 25px var(--neon-color);
-      transition: transform 0.3s ease;
+      background:var(--neon-color);
+      border:none;
+      padding:14px 32px;
+      color:#fff;
+      font-size:1.2rem;
+      border-radius:30px;
+      cursor:pointer;
+      box-shadow:0 0 15px var(--neon-color),0 0 25px var(--neon-color);
+      transition:transform .3s;
     }
-    .glow-button:hover { transform: scale(1.1); }
-    .countdown {
-      font-size: 2rem;
-      margin: 20px 0;
-      color: var(--neon-alt);
-      animation: neonPulse 1.5s infinite;
-    }
+    .glow-button:hover { transform:scale(1.1); }
+    .countdown { font-size:2rem; margin:20px 0; color:var(--neon-alt); animation: neonPulse 1.5s infinite; }
     .video-container {
-      width: 90%;
-      max-width: 900px;
-      margin-top: 20px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 0 20px rgba(255, 0, 85, 0.8);
+      width:90%; max-width:900px;
+      margin-top:20px;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 0 20px rgba(255,0,85,0.8);
+      transition:transform .4s;
     }
-    .video-container:hover { transform: scale(1.02); }
+    .video-container:hover { transform:scale(1.02); }
     video {
-      width: 100%;
-      height: auto;
-      display: block;
+      width:100%;
+      height:auto;
+      display:block;
     }
   </style>
   <script>
     // disable right-click
     document.addEventListener('contextmenu', e => e.preventDefault());
+    
     // Countdown timer
     function initCountdown() {
       const el = document.getElementById('countdown');
@@ -97,18 +95,29 @@
           clearInterval(timer);
           return;
         }
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        const days = Math.floor(diff / 864e5);
+        const hours = Math.floor((diff % 864e5) / 36e5);
+        const minutes = Math.floor((diff % 36e5) / 6e4);
+        const seconds = Math.floor((diff % 6e4) / 1000);
         el.textContent = `🎉 Starts In: ${days}d ${hours}h ${minutes}m ${seconds}s`;
       }, 1000);
     }
+    
+    // Theme toggle
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') document.body.classList.add('light-theme');
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      });
+    }
+    
     // Keyboard shortcuts
     function initShortcuts() {
       const vid = document.getElementById('video-player');
       window.addEventListener('keydown', e => {
-        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+        if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
         switch (e.key) {
           case ' ': e.preventDefault(); vid.paused ? vid.play() : vid.pause(); break;
           case 'ArrowLeft': vid.currentTime = Math.max(0, vid.currentTime - 10); break;
@@ -120,25 +129,29 @@
         }
       });
     }
+    
     window.addEventListener('DOMContentLoaded', () => {
-      initCountdown(); initShortcuts();
+      initCountdown(); initTheme(); initShortcuts();
     });
   </script>
 </head>
 <body>
   <h1>🎬 Final Destination (Hindi)</h1>
-  <p>Experience the thrill in real-time!</p>
+  <p>Join our electrifying online Watch Party and experience the thrill in real-time!</p>
+
   <div id="countdown" class="countdown">Loading...</div>
   <div class="button-group">
-    <button class="glow-button" onclick="document.getElementById('video-section').scrollIntoView({behavior:'smooth'})">
-      Enter Watch Party
-    </button>
+    <button class="glow-button" onclick="document.getElementById('video-section').scrollIntoView({behavior:'smooth'})">Enter Watch Party</button>
+    <button id="theme-toggle" class="glow-button">Toggle Theme</button>
   </div>
+
   <div class="video-container" id="video-section">
     <video id="video-player" controls autoplay>
-      <source src="https://archive.org/download/d-40c-6710ed-2949f-07453334dff-629434/D40c6710ed2949f07453334dff629434.mp4" type="video/mp4" />
+      <source src="https://archive.org/download/d-40c-6710ed-2949f-07453334dff-629434/D40c6710ed2949f07453334dff629434.mp4" type="video/mp4">
       Your browser does not support HTML5 video.
     </video>
   </div>
+
+  <audio id="bg-audio" src="https://example.com/your-loop.mp3" autoplay loop hidden></audio>
 </body>
 </html>
